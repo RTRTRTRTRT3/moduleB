@@ -3,13 +3,11 @@ const app = express();
 const PORT = 3000;
 const tokens = require('./tokens');
 
-// Пример данных о тарифах сервисов (долларов за секунду)
 const serviceRates = {
     'Service #1': 0.0015,
     'Service #2': 0.005
 };
 
-// Пример базы данных с использованием в секундах
 const usageData = [
     { token: 'development token', service: 'Service #1', time: 0.162 },
     { token: 'production token', service: 'Service #1', time: 1.039 },
@@ -21,7 +19,6 @@ app.get('/api/billing', (req, res) => {
     const tokenUsage = {};
 
     usageData.forEach(({ token, service, time }) => {
-        // Проверяем, существует ли токен
         if (!tokens.some(t => t.name === token)) {
             return;
         }
