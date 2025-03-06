@@ -135,7 +135,6 @@
         </table>
     </div>
 
-    <!-- Modal window -->
     <div id="tokenModal" class="modal">
         <div class="modal-content">
             <h2>Create New Token</h2>
@@ -147,7 +146,6 @@
     </div>
 
     <script>
-        // Authentication check
         if (localStorage.getItem('isAuthenticated') !== 'true') {
             window.location.href = "login page.html";
         }
@@ -163,7 +161,7 @@
                 
                 if (workspace) {
                     const tokenTable = document.getElementById("tokenTable");
-                    tokenTable.innerHTML = ''; // Clear table
+                    tokenTable.innerHTML = ''; 
                     
                     workspace.apiTokens.forEach((tokenInfo, index) => {
                         const row = tokenTable.insertRow();
