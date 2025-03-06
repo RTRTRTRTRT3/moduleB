@@ -87,7 +87,7 @@
 
         // Check authentication on page load
         if (localStorage.getItem('isAuthenticated') === 'true') {
-            window.location.href = "workspace.html";
+            window.location.href = "public/workspace.html";
         }
 
         document.getElementById("loginForm").addEventListener("submit", (event) => {
@@ -100,7 +100,7 @@
             if (users[username] && users[username] === password) {
                 localStorage.setItem('currentUser', username);
                 localStorage.setItem('isAuthenticated', 'true');
-                window.location.href = "workspace.html";
+                window.location.href = "public/workspace.html";
             } else {
                 alert("Invalid username or password!");
             }
