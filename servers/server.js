@@ -6,19 +6,15 @@ const fs = require("fs");
 const app = express();
 const PORT = 3000;
 
-// Подключаем body-parser для обработки данных формы
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Отдаем HTML-файл с формой
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/login page.html");
 });
 
-// Авторизация пользователя
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-    // Загружаем пользователей из файла
     const users = JSON.parse(fs.readFileSync("users.json", "utf8"));
     const user = users.find(u => u.username === username);
 
@@ -29,13 +25,13 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Запуск сервера
+
 app.listen(PORT, () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const workspaceId = "exampleWorkspace"; // ID текущего рабочего пространства
+    const workspaceId = "exampleWorkspace";
     const spentElem = document.getElementById("current-spent");
     const limitElem = document.getElementById("quota-limit");
     const daysLeftElem = document.getElementById("days-left");
