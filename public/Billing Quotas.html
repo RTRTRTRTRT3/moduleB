@@ -94,7 +94,6 @@
     </div>
 
     <script>
-        // Проверка аутентификации
         if (localStorage.getItem('isAuthenticated') !== 'true') {
             window.location.href = "login page.html";
         }
@@ -168,7 +167,6 @@
                 }
             });
 
-            // Загружаем начальные данные
             fetchQuota();
         });
     </script>
