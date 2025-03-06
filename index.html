@@ -46,7 +46,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
-            padding-right: 40px; /* Отступ для иконки */
+            padding-right: 40px; /* Отступ для кнопки-глаз */
         }
 
         /* Иконка "глаз" */
@@ -63,6 +63,7 @@
             border: none;
             outline: none;
             opacity: 0.6;
+            background-color: transparent;
         }
 
         .toggle-password:hover {
@@ -113,14 +114,10 @@
             window.location.href = "workspace.html";
         }
 
-        // Функция для переключения видимости пароля
+        // Переключение видимости пароля
         document.getElementById("togglePassword").addEventListener("click", () => {
             const passwordField = document.getElementById("password");
-            if (passwordField.type === "password") {
-                passwordField.type = "text"; // Показать пароль
-            } else {
-                passwordField.type = "password"; // Скрыть пароль
-            }
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
         });
 
         // Обработчик входа
@@ -142,4 +139,3 @@
     </script>
 </body>
 </html>
- 
