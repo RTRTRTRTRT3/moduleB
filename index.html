@@ -79,15 +79,13 @@
     </div>
 
     <script>
-        // Demo accounts
         const users = {
             'demo1': 'skills2023d1',
             'demo2': 'skills2023d2'
         };
 
-        // Check authentication on page load
         if (localStorage.getItem('isAuthenticated') === 'true') {
-            window.location.href = "public/workspace.html";
+            window.location.href = "workspace.html";
         }
 
         document.getElementById("loginForm").addEventListener("submit", (event) => {
@@ -100,7 +98,7 @@
             if (users[username] && users[username] === password) {
                 localStorage.setItem('currentUser', username);
                 localStorage.setItem('isAuthenticated', 'true');
-                window.location.href = "public/workspace.html";
+                window.location.href = "workspace.html";
             } else {
                 alert("Invalid username or password!");
             }
