@@ -212,7 +212,6 @@
                 workspaces[workspaceIndex].apiTokens.push(tokenInfo);
                 localStorage.setItem(`workspaces_${currentUser}`, JSON.stringify(workspaces));
 
-                // Reload page to update token list
                 alert(`Your new API token: ${newToken}\nSave it now, as it won't be shown again!`);
                 location.reload();
             }
