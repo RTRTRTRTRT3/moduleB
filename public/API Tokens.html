@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Token Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 10px 0;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 5px;
+            width: 80%;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <a href="workspace.html" class="back-button">← Back</a>
+            <h1>API Token Management</h1>
+        </div>
+        
+        <button class="btn" id="createTokenBtn">Create New Token</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Creation Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tokenTable">
+                <tr>
+                    <td>Token 1</td>
+                    <td>2025-03-04</td>
+                    <td>Active</td>
+                    <td><button class="btn btn-danger" onclick="revokeToken(this)">Revoke</button></td>
+                </tr>
+                <tr>
+                    <td>Token 2</td>
+                    <td>2025-02-28</td>
+                    <td>Revoked</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal window -->
+    <div id="tokenModal" class="modal">
+        <div class="modal-content">
+            <h2>Create New Token</h2>
+            <label for="tokenName">Token Name:</label>
+            <input type="text" id="tokenName" maxlength="100">
+            <button class="btn" id="saveToken">Create</button>
+            <button class="btn btn-danger" id="closeModal">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Authentication check
+        if (localStorage.getItem('isAuthenticated') !== 'true') {
+            window.location.href = "login page.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const workspaceTitle = urlParams.get('workspace');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (workspaceTitle) {
+                const workspaces = JSON.parse(localStorage.getItem(`workspaces_${currentUser}`)) || [];
+                const workspace = workspaces.find(w => w.title === workspaceTitle);
+                
+                if (workspace) {
+                    const tokenTable = document.getElementById("tokenTable");
+                    tokenTable.innerHTML = ''; // Clear table
+                    
+                    workspace.apiTokens.forEach((tokenInfo, index) => {
+                        const row = tokenTable.insertRow();
+                        row.innerHTML = `
+                            <td>${tokenInfo.name}</td>
+                            <td>${new Date(tokenInfo.createdAt).toLocaleDateString()}</td>
+                            <td>${tokenInfo.isRevoked ? 'Revoked' : 'Active'}</td>
+                            <td>${tokenInfo.isRevoked ? '-' : 
+                                `<button class="btn btn-danger" onclick="revokeToken('${workspaceTitle}', ${index})">Revoke</button>`}</td>
+                        `;
+                    });
+                }
+            }
+        });
+
+        function generateApiToken() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            for (let i = 0; i < 40; i++) {
+                token += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return token;
+        }
+
+        document.getElementById("saveToken").addEventListener("click", function() {
+            const tokenName = document.getElementById("tokenName").value.trim();
+            const urlParams = new URLSearchParams(window.location.search);
+            const workspaceTitle = urlParams.get('workspace');
+            const currentUser = localStorage.getItem('currentUser');
+
+            if (tokenName.length === 0 || tokenName.length > 100) {
+                alert("Token name must be between 1 and 100 characters!");
+                return;
+            }
+
+            const workspaces = JSON.parse(localStorage.getItem(`workspaces_${currentUser}`)) || [];
+            const workspaceIndex = workspaces.findIndex(w => w.title === workspaceTitle);
+
+            if (workspaceIndex !== -1) {
+                const newToken = generateApiToken();
+                const tokenInfo = {
+                    name: tokenName,
+                    token: newToken,
+                    createdAt: new Date().toISOString(),
+                    isRevoked: false
+                };
+
+                workspaces[workspaceIndex].apiTokens.push(tokenInfo);
+                localStorage.setItem(`workspaces_${currentUser}`, JSON.stringify(workspaces));
+
+                // Reload page to update token list
+                alert(`Your new API token: ${newToken}\nSave it now, as it won't be shown again!`);
+                location.reload();
+            }
+        });
+
+        function revokeToken(workspaceTitle, tokenIndex) {
+            const currentUser = localStorage.getItem('currentUser');
+            const workspaces = JSON.parse(localStorage.getItem(`workspaces_${currentUser}`)) || [];
+            const workspace = workspaces.find(w => w.title === workspaceTitle);
+
+            if (workspace && workspace.apiTokens[tokenIndex]) {
+                workspace.apiTokens[tokenIndex].isRevoked = true;
+                workspace.apiTokens[tokenIndex].revokedAt = new Date().toISOString();
+                localStorage.setItem(`workspaces_${currentUser}`, JSON.stringify(workspaces));
+                location.reload();
+            }
+        }
+
+        document.getElementById("createTokenBtn").addEventListener("click", function() {
+            document.getElementById("tokenModal").style.display = "flex";
+        });
+
+        document.getElementById("closeModal").addEventListener("click", function() {
+            document.getElementById("tokenModal").style.display = "none";
+        });
+    </script>
+</body>
+</html>

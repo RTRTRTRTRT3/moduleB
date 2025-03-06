@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление квотами</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .quota-info {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .quota-actions {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .progress {
+            height: 100%;
+            background-color: #007bff;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body >
+    <a href="workspace.html" class="back-button">← Back</a>
+
+
+    
+    
+    <div class="container">
+        <h1>Управление квотами</h1>
+        <div class="quota-info">
+            <h2>Текущая квота</h2>
+            <p>Потрачено: <span id="current-spent">$0</span></p>
+            <p>Лимит: <span id="quota-limit">Не установлен</span></p>
+            <p>Осталось дней в текущем месяце: <span id="days-left">0</span></p>
+            <div class="progress-bar">
+                <div id="progress" class="progress" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="quota-actions">
+            <button id="set-quota" class="btn-primary">Установить квоту</button>
+            <button id="remove-quota" class="btn-danger">Удалить квоту</button>
+        </div>
+    </div>
+
+    <script>
+        // Проверка аутентификации
+        if (localStorage.getItem('isAuthenticated') !== 'true') {
+            window.location.href = "login page.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const workspaceId = urlParams.get('workspace');
+            
+            if (!workspaceId) {
+                alert("Не указано рабочее пространство!");
+                window.location.href = "workspace.html";
+                return;
+            }
+
+            const spentElem = document.getElementById("current-spent");
+            const limitElem = document.getElementById("quota-limit");
+            const daysLeftElem = document.getElementById("days-left");
+            const progressBar = document.getElementById("progress");
+
+            function updateQuotaDisplay(data) {
+                spentElem.textContent = `$${data.spent.toFixed(2)}`;
+                if (data.limit) {
+                    limitElem.textContent = `$${data.limit.toFixed(2)}`;
+                    const percentage = (data.spent / data.limit) * 100;
+                    progressBar.style.width = `${Math.min(percentage, 100)}%`;
+                    progressBar.style.backgroundColor = percentage > 90 ? '#dc3545' : '#007bff';
+                } else {
+                    limitElem.textContent = "Не установлен";
+                    progressBar.style.width = "0%";
+                }
+                daysLeftElem.textContent = data.daysLeft;
+            }
+
+            function fetchQuota() {
+                fetch(`/api/quotas/${workspaceId}`)
+                    .then(res => res.json())
+                    .then(updateQuotaDisplay)
+                    .catch(err => alert("Ошибка при загрузке данных квоты"));
+            }
+
+            document.getElementById("set-quota").addEventListener("click", () => {
+                const limit = prompt("Введите лимит квоты в долларах:");
+                if (limit && !isNaN(limit)) {
+                    fetch(`/api/quotas/${workspaceId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ limit: parseFloat(limit) })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            fetchQuota();
+                        } else {
+                            alert("Ошибка при установке квоты");
+                        }
+                    });
+                }
+            });
+
+            document.getElementById("remove-quota").addEventListener("click", () => {
+                if (confirm("Вы уверены, что хотите удалить квоту?")) {
+                    fetch(`/api/quotas/${workspaceId}`, { method: "DELETE" })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                fetchQuota();
+                            } else {
+                                alert("Ошибка при удалении квоты");
+                            }
+                        });
+                }
+            });
+
+            // Загружаем начальные данные
+            fetchQuota();
+        });
+    </script>
+</body>
+</html>

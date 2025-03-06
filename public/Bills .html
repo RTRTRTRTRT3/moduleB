@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 20px;
+        }
+        .billing-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 800px;
+            margin: 0 auto;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        .billing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .billing-header select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .token-name {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+        .service-name {
+            padding-left: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        .total {
+            font-weight: bold;
+            text-align: right;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="billing-container">
+        <div class="header-container">
+            <a href="workspace.html" class="back-button">← Back</a>
+            <h2>Billing Report</h2>
+        </div>
+        <div class="billing-header">
+            <select>
+                <option>Select Month</option>
+                <option>January</option>
+                <option>February</option>
+                <option>March</option>
+            </select>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Token</th>
+                    <th>Time</th>
+                    <th>Per sec.</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="token-name">
+                    <td colspan="4">Development Token</td>
+                </tr>
+                <tr>
+                    <td class="service-name">Service #1</td>
+                    <td>0.162 s</td>
+                    <td>$0.0015</td>
+                    <td>$0.24</td>
+                </tr>
+                <tr class="token-name">
+                    <td colspan="4">Production Token</td>
+                </tr>
+                <tr>
+                    <td class="service-name">Service #1</td>
+                    <td>1.039 s</td>
+                    <td>$0.0015</td>
+                    <td>$1.56</td>
+                </tr>
+                <tr>
+                    <td class="service-name">Service #2</td>
+                    <td>0.501 s</td>
+                    <td>$0.005</td>
+                    <td>$2.51</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="total">Total: <strong>$4.31</strong></p>
+    </div>
+
+    <script>
+        // Authentication check
+        if (localStorage.getItem('isAuthenticated') !== 'true') {
+            window.location.href = "login page.html";
+        }
+    </script>
+</body>
+</html>
