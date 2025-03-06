@@ -21,7 +21,6 @@
         <section class="workspace-container">
             <button class="add-workspace" onclick="openModal()">+ Create New</button>
             <div class="workspace-list" id="workspace-list">
-                <!-- Workspaces will be added here -->
             </div>
         </section>
     </main>
@@ -35,7 +34,6 @@
         </div>
     </div>
     <script>
-        // Authentication check
         if (localStorage.getItem('isAuthenticated') !== 'true') {
             window.location.href = "login page.html";
         }
@@ -68,7 +66,6 @@
         }
 
         function generateApiToken() {
-            // Генерация токена длиной 40 символов
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let token = '';
             for (let i = 0; i < 40; i++) {
@@ -151,7 +148,7 @@
             transition: transform 0.2s ease-in-out;
         }
         .modal {
-            display: flex; /* Убираем display: none, чтобы использовать анимации */
+            display: flex;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease-in-out;
@@ -162,7 +159,7 @@
         }
         .modal-content { background: white; padding: 20px; width: 300px; border-radius: 5px; }
         .close { float: right; font-size: 20px; cursor: pointer; }
-        .workspace-link { color: blue; text-decoration: underline; cursor: pointer; } /* Стили для кнопки на "API Tokens.html" */
+        .workspace-link { color: blue; text-decoration: underline; cursor: pointer; } 
     </style>
 </body>
 </html>
